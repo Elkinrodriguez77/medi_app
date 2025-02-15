@@ -1,1 +1,15 @@
+# Ignorar dependencias locales
+Lib/
+Scripts/
+__pycache__/
+
+# Ignorar archivos de entorno virtual (si usas virtualenv)
+*.pyc
+*.pyo
+*.pyd
 .env
+
+# Ignorar archivos de paquetes instalados
+plan_est/Lib/
+plan_est/Scripts/
+plan_est/__pycache__/
