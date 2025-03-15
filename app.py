@@ -67,8 +67,12 @@ def obtener_datos():
     pilar = request.args.get('pilar')
     objetivo = request.args.get('objetivo')
 
-    query = DatosEstrategicos.query.filter_by(pilar_estrategico=pilar, objetivo_estrategico=objetivo).all()
-    
+    # ✅ Consulta solo con Pilar y Objetivo
+    query = DatosEstrategicos.query.filter_by(
+    pilar_estrategico=pilar,
+    objetivo_estrategico=objetivo
+).order_by(DatosEstrategicos.periodo.asc()).all()
+
     return jsonify([
         {
             "id": d.id,

@@ -48,57 +48,33 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
         .btn-custom {
-            background-color: #42A6CC;
+            background-color: #FF6700;
             color: white;
+            border: none;
             padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
-            border: none;
             transition: 0.3s;
         }
 
         .btn-custom:hover {
-            background-color: #FF6700;
-            color: white;
-        }
-
-        /* Color para el encabezado de la tabla */
-        .table thead {
-            background-color: #42A6CC;
-            color: white;
+            background-color: #e65c00;
         }
     </style>
-
 </head>
 <body class="container mt-4">
-
-    <!-- Logo y Título -->
-    <!-- Logo y Título -->
     <div class="header">
         <img src="static/img/logo-medirex.png" alt="Logo de Medirex" class="logo">
         <h1>Gestión Estratégica MEDIREX</h1>
-
-        <!-- Botón para volver a la página de Dash -->
-        <a href="https://www.bimedirex.creacionespowerbi.com/desarrollo/" class="btn btn-custom mt-3">
-            🔙 Volver a Dash
-        </a>
+        <a href="https://www.bimedirex.creacionespowerbi.com/desarrollo/" class="btn btn-custom mt-3">🔙 Volver a Dash</a>
     </div>
 
-
-    <!-- Selectores de Pilar y Objetivo en dos columnas -->
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label for="pilar" class="form-label">Pilar Estratégico:</label>
-            <select id="pilar" class="form-select" onchange="actualizarObjetivos()">
+            <select id="pilar" class="form-select" onchange="actualizarResponsables()">
+                <option value="">Seleccione un Pilar</option>
                 <option value="Crecimiento Sostenible">Crecimiento Sostenible</option>
                 <option value="Innovación">Innovación</option>
                 <option value="Experiencia Stakeholders">Experiencia Stakeholders</option>
@@ -106,13 +82,21 @@
             </select>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <label for="responsable" class="form-label">Responsable:</label>
+            <select id="responsable" class="form-select" onchange="actualizarObjetivos()">
+                <option value="">Seleccione un Responsable</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
             <label for="objetivo" class="form-label">Objetivo Estratégico:</label>
-            <select id="objetivo" class="form-select" onchange="cargarDatos()"></select>
+            <select id="objetivo" class="form-select" onchange="cargarDatos()">
+                <option value="">Seleccione un Objetivo</option>
+            </select>
         </div>
     </div>
 
-    <!-- Tabla de Datos -->
     <div class="table-container p-3 mt-4">
         <h2>Datos Registrados</h2>
         <table class="table table-striped">
@@ -120,6 +104,7 @@
                 <tr>
                     <th>Pilar</th>
                     <th>Objetivo</th>
+                    <th>Responsable</th>
                     <th>Real</th>
                     <th>Periodo</th>
                     <th>Trimestre</th>
@@ -129,8 +114,7 @@
         </table>
     </div>
 
-    <!-- Formulario -->
-    <div class="form-container">
+    <div class="table-container p-3 mt-4">
         <h2>Ingreso de Datos</h2>
         <form id="formulario">
             <div class="mb-3">
@@ -147,108 +131,111 @@
         </form>
     </div>
 
-    <!-- Script para Manejo de Datos -->
     <script>
-        const objetivosPorPilar = {
-            "Crecimiento Sostenible": [
-                "% Crecimiento",
-                "% Ventas Productos Estratégicos",
-                "% Cumplimiento Ppto ventas",
-                "Zonas Aperturadas",
-                "% Margen Neto",
-                "% Cronograma Empresas B"
-            ],
-            "Innovación": [
-                "% Cronograma Sinfonia de Procesos",
-                "% Cronograma Transformación Digital",
-                "Productos Sustitutos",
-                "Productos Innovadores"
-            ],
-            "Experiencia Stakeholders": [
-                "Comunidades Impactadas",
-                "% Satisfacción del Aliado",
-                "NPS",
-                "% ROE",
-                "% Mujeres Empoderadas"
-            ],
-            "Cultura Humanista": [
-                "% Indice Apropiación cultural",
-                "% Marca de Amor INEOR",
-                "Vidas Mejoradas"
-            ]
+        const datosJerarquia = {
+            "Crecimiento Sostenible": {
+                "Gerencia Comercial": ["% Crecimiento", "% Ventas Productos Estratégicos", "% Cumplimiento Ppto ventas"],
+                "Dirección Negocios": ["Zonas Aperturadas"],
+                "Dirección Financiera": ["% Margen Neto"],
+                "Dirección Estratégica": ["% Cronograma Empresas B"]
+            },
+            "Innovación": {
+                "Dirección Estratégica": ["% Cronograma Sinfonia de Procesos"],
+                "Dirección Financiera": ["% Cronograma Transformación Digital"],
+                "Dirección Negocios": ["Productos Sustitutos", "Productos Innovadores"]
+            }
         };
+
+        function actualizarResponsables() {
+            let pilar = document.getElementById("pilar").value;
+            let responsableSelect = document.getElementById("responsable");
+            responsableSelect.innerHTML = "<option value=''>Seleccione un Responsable</option>";
+
+            if (datosJerarquia[pilar]) {
+                Object.keys(datosJerarquia[pilar]).forEach(responsable => {
+                    let option = document.createElement("option");
+                    option.value = responsable;
+                    option.textContent = responsable;
+                    responsableSelect.appendChild(option);
+                });
+            }
+            actualizarObjetivos();
+        }
 
         function actualizarObjetivos() {
             let pilar = document.getElementById("pilar").value;
+            let responsable = document.getElementById("responsable").value;
             let objetivoSelect = document.getElementById("objetivo");
+            objetivoSelect.innerHTML = "<option value=''>Seleccione un Objetivo</option>";
 
-            if (!objetivosPorPilar[pilar]) return;
-
-            objetivoSelect.innerHTML = "";
-
-            objetivosPorPilar[pilar].forEach(objetivo => {
-                let option = document.createElement("option");
-                option.value = objetivo;
-                option.textContent = objetivo;
-                objetivoSelect.appendChild(option);
-            });
-
-            cargarDatos();
+            if (datosJerarquia[pilar] && datosJerarquia[pilar][responsable]) {
+                datosJerarquia[pilar][responsable].forEach(objetivo => {
+                    let option = document.createElement("option");
+                    option.value = objetivo;
+                    option.textContent = objetivo;
+                    objetivoSelect.appendChild(option);
+                });
+            }
         }
 
         async function cargarDatos() {
             let pilar = document.getElementById("pilar").value;
             let objetivo = document.getElementById("objetivo").value;
-            
-            if (!pilar || !objetivo) return;
+            let responsable = document.getElementById("responsable").value;
 
-            let response = await fetch(`/datos?pilar=${pilar}&objetivo=${objetivo}`);
+            if (!pilar || !objetivo || !responsable) return;
+
+            let response = await fetch(`/datos?pilar=${encodeURIComponent(pilar)}&objetivo=${encodeURIComponent(objetivo)}`);
             let datos = await response.json();
+
             let tabla = document.getElementById("tabla-datos");
-            tabla.innerHTML = "";
+            tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos datos
 
             datos.forEach(d => {
-                tabla.innerHTML += `<tr>
+                let fila = `<tr>
                     <td>${d.pilar_estrategico}</td>
                     <td>${d.objetivo_estrategico}</td>
+                    <td>${responsable}</td>
                     <td>${d.real}</td>
                     <td>${d.periodo}</td>
                     <td>${d.trimestre}</td>
                 </tr>`;
-            });
+                tabla.innerHTML += fila;
+        });
         }
-
+        
         async function guardarDato() {
-            let pilar = document.getElementById("pilar").value;
-            let objetivo = document.getElementById("objetivo").value;
-            let real = document.getElementById("real").value;
-            let periodo = document.getElementById("periodo").value;
+                let pilar = document.getElementById("pilar").value;
+                let responsable = document.getElementById("responsable").value;
+                let objetivo = document.getElementById("objetivo").value;
+                let real = document.getElementById("real").value;
+                let periodo = document.getElementById("periodo").value;
 
-            if (!pilar || !objetivo || real === "" || !periodo) {
-                alert("Por favor, completa todos los campos.");
-                return;
-            }
+                if (!pilar || !responsable || !objetivo || !real || !periodo) {
+                    alert("Todos los campos son obligatorios");
+                    return;
+                }
 
-            let response = await fetch('/datos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                let datos = {
                     pilar_estrategico: pilar,
                     objetivo_estrategico: objetivo,
                     real: parseFloat(real),
                     periodo: periodo
-                })
-            });
+                };
 
-            let result = await response.json();
-            alert(result.mensaje);
-            cargarDatos();
-        }
+                let response = await fetch('/datos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
 
-        document.addEventListener("DOMContentLoaded", () => {
-            actualizarObjetivos();
-        });
+                let resultado = await response.json();
+                alert(resultado.mensaje);
+                cargarDatos();  // Recargar la tabla después de guardar
+            }
+
     </script>
-
 </body>
 </html>
