@@ -1,30 +1,23 @@
-import os
-import urllib.parse
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
+import os
 from datetime import datetime
 
-# Cargar variables de entorno
 load_dotenv()
 
-app = Flask(__name__, template_folder="templates")  # Asegurar que busca en "templates"
+app = Flask(__name__, template_folder="templates")
 CORS(app)
 
-# Configurar la conexión a Azure SQL
-server = os.getenv("server")
-database = os.getenv("database")
-username = "useradmin"
-password = os.getenv("password")
+# 🔁 PostgreSQL config
+db_user = os.getenv("POSTGRES_USER")
+db_password = os.getenv("POSTGRES_PASSWORD")
+db_name = os.getenv("POSTGRES_DB")
+db_host = os.getenv("POSTGRES_HOST")
+db_port = os.getenv("POSTGRES_PORT")
 
-# 🔥 Codificar la conexión para SQLAlchemy
-params = urllib.parse.quote_plus(
-    f"DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};UID={username};PWD={password}"
-)
-
-connection_string = f"mssql+pyodbc:///?odbc_connect={params}"
-
+connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -32,12 +25,14 @@ db = SQLAlchemy(app)
 
 # 📌 Modelo de datos con trimestre
 class DatosEstrategicos(db.Model):
+    __tablename__ = 'estrategia'  # 👈 Aquí le dices que use la tabla llamada 'estrategia'
+
     id = db.Column(db.Integer, primary_key=True)
     pilar_estrategico = db.Column(db.String(100))
     objetivo_estrategico = db.Column(db.String(100))
     real = db.Column(db.Float)
     periodo = db.Column(db.Date)
-    trimestre = db.Column(db.String(10))  # Q1, Q2, Q3, Q4
+    trimestre = db.Column(db.String(10))
     anio = db.Column(db.Integer)
 
 # Crear la base de datos si no existe
