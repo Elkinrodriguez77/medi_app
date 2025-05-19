@@ -1,15 +1,18 @@
-# Ignorar dependencias locales
-Lib/
-Scripts/
-__pycache__/
+# Ignorar entornos virtuales
+plan_est/
+entornopy311/
 
-# Ignorar archivos de entorno virtual (si usas virtualenv)
+# Ignorar archivo de notas
+notas.md
+
+# Ignorar otros archivos temporales o típicos de Python
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.sqlite3
 .env
+.DS_Store
 
-# Ignorar archivos de paquetes instalados
-plan_est/Lib/
-plan_est/Scripts/
-plan_est/__pycache__/
+# VS Code (opcional)
+.vscode/
